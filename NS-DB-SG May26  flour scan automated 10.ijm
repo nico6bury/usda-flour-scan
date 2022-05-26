@@ -36,6 +36,10 @@ showParticles = false;
 particleShowSoftLim = 10
 // whether or not to append threshold to summary
 appendThreshold = false;
+// default lower size limit
+szMin=2;
+// default upper size limit
+defSizeLimit = 200;
 
 // define dialog window
 Dialog.create("Macro Options");
@@ -53,6 +57,10 @@ Dialog.addCheckboxGroup(2, 1, newArray("Don't draw images to improve performance
 "Show progress bar with predicted times"), newArray(useBatchMode, shouldDisplayProgress));
 // fourth line
 Dialog.addCheckbox("Show Particle Detection on Image", false);
+// fifth line
+Dialog.addNumber("Lower Size Limit", szMin);
+Dialog.addToSameRow();
+Dialog.addNumber("Upper Size Limit", defSizeLimit);
 
 // get selected options from dialog window
 Dialog.show();
@@ -68,6 +76,9 @@ useBatchMode = Dialog.getCheckbox();
 shouldDisplayProgress = Dialog.getCheckbox();
 // get user selection from fourth line
 showParticles = Dialog.getCheckbox();
+// get user selection from fifth line
+szMin = Dialog.getNumber();
+defSizeLimit = Dialog.getNumber();
 
 // act on selected options from dialog window
 if(chosenOS == validOSs[1]){
@@ -165,8 +176,8 @@ function processFile(){
 	run("Set Scale...", "distance=0 known=0 unit=pixel global");
 	// specify the measurement data to recieve from analyze particles
 	run("Set Measurements...", "area perimeter bounding redirect=None decimal=1");
-	szMin=2;
-	run("Analyze Particles...", "size=szMin-200 "+
+	
+	run("Analyze Particles...", "size=szMin-defSizeLimit "+
 	"show=[Overlay Masks] display clear summarize");
 	if(showParticles && !is("Batch Mode")){
 		waitForUser("Particle showcase", "Particles should be outlined in blue\n"+
