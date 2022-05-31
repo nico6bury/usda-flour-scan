@@ -40,6 +40,8 @@ appendThreshold = false;
 szMin=2;
 // default upper size limit
 defSizeLimit = 200;
+// whether or not to append size limit to summary
+appendSize = false;
 
 // define dialog window
 Dialog.create("Macro Options");
@@ -61,6 +63,8 @@ Dialog.addCheckbox("Show Particle Detection on Image", false);
 Dialog.addNumber("Lower Size Limit", szMin);
 Dialog.addToSameRow();
 Dialog.addNumber("Upper Size Limit", defSizeLimit);
+// sixth line
+Dialog.addCheckbox("Append Size limit to Summary Window", appendSize);
 
 // get selected options from dialog window
 Dialog.show();
@@ -79,6 +83,8 @@ showParticles = Dialog.getCheckbox();
 // get user selection from fifth line
 szMin = Dialog.getNumber();
 defSizeLimit = Dialog.getNumber();
+// get user selection from sixth line
+appendSize = Dialog.getCheckbox();
 
 // act on selected options from dialog window
 if(chosenOS == validOSs[1]){
@@ -148,10 +154,27 @@ if(useBatchMode){
 	setBatchMode("exit and display");
 }//end if we have been using batch mode
 
+curSummaryTitle = "Summary";
+
 if(appendThreshold){
-	if(isOpen("Summary")){selectWindow("Summary");
-	Table.rename("Summary","SummaryTH"+th01);}
+	if(isOpen(curSummaryTitle)){
+		selectWindow(curSummaryTitle);
+		curSummaryTitle = getInfo("window.title");
+		newSummaryTitle = curSummaryTitle+"TH"+th01;
+		Table.rename(curSummaryTitle, newSummaryTitle);
+		curSummaryTitle = newSummaryTitle;
+	}//end if the summary window is even open
 }//end if we should append threshold to name of summary
+
+if(appendSize){
+	if(isOpen(curSummaryTitle)){
+		selectWindow(curSummaryTitle);
+		curSummaryTitle = getInfo("window.title");
+		newSummaryTitle = curSummaryTitle+"-SizeLimit"+szMin+"-"+defSizeLimit;
+		Table.rename(curSummaryTitle, newSummaryTitle);
+		curSummaryTitle = newSummaryTitle;
+	}//end if the summary window is even open
+}//end if we should appent size limit to name of summary
 
 ///////////// MAIN FUNCTION START ///////////////
 
