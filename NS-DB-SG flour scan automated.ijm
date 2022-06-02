@@ -200,6 +200,12 @@ function processFile(){
 	// specify the measurement data to recieve from analyze particles
 	run("Set Measurements...", "area perimeter bounding redirect=None decimal=1");
 	
+	// debug feature for doing infinite max size
+	infinitySwitch = false;
+	if(infinitySwitch == true){
+		defSizeLimit = "Infinity";
+	}//end if we should do infinite max size
+	
 	run("Analyze Particles...", "size=szMin-defSizeLimit "+
 	"show=[Overlay Masks] display clear summarize");
 	if(showParticles && !is("Batch Mode")){
