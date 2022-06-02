@@ -174,10 +174,10 @@ if(appendSize){
 		curSummaryTitle = getInfo("window.title");
 		newSummaryTitle = curSummaryTitle+"-SizeLimit"+szMin+"-";
 		if(infinitySwitch == false){
-			newSummaryTitle += defSizeLimit;
+			newSummaryTitle = newSummaryTitle + defSizeLimit;
 		}//end if we use normal defined size limit
 		else{
-			newSummaryTitle += "Infinity";
+			newSummaryTitle = newSummaryTitle + "Infinity";
 		}//end else we use infinite size
 		Table.rename(curSummaryTitle, newSummaryTitle);
 		curSummaryTitle = newSummaryTitle;
@@ -210,9 +210,8 @@ function processFile(){
 	
 	
 	if(infinitySwitch == true){
-		defSizeLimit = "Infinity";
 		run("Analyze Particles...", "size=szMin-Infinity "+
-	"show=[Overlay Masks] display clear summarize");
+		"show=[Overlay Masks] display clear summarize");
 	}//end if we should do infinite max size
 	else{
 		run("Analyze Particles...", "size=szMin-defSizeLimit "+
