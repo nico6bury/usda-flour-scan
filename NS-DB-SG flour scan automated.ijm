@@ -85,6 +85,8 @@ szMin = Dialog.getNumber();
 defSizeLimit = Dialog.getNumber();
 // get user selection from sixth line
 appendSize = Dialog.getCheckbox();
+// debug feature for doing infinite max size
+infinitySwitch = false;
 
 // act on selected options from dialog window
 if(chosenOS == validOSs[1]){
@@ -170,7 +172,13 @@ if(appendSize){
 	if(isOpen(curSummaryTitle)){
 		selectWindow(curSummaryTitle);
 		curSummaryTitle = getInfo("window.title");
-		newSummaryTitle = curSummaryTitle+"-SizeLimit"+szMin+"-"+defSizeLimit;
+		newSummaryTitle = curSummaryTitle+"-SizeLimit"+szMin+"-";
+		if(infinitySwitch == false){
+			newSummaryTitle += defSizeLimit;
+		}//end if we use normal defined size limit
+		else{
+			newSummaryTitle += "Infinity";
+		}//end else we use infinite size
 		Table.rename(curSummaryTitle, newSummaryTitle);
 		curSummaryTitle = newSummaryTitle;
 	}//end if the summary window is even open
@@ -200,14 +208,17 @@ function processFile(){
 	// specify the measurement data to recieve from analyze particles
 	run("Set Measurements...", "area perimeter bounding redirect=None decimal=1");
 	
-	// debug feature for doing infinite max size
-	infinitySwitch = false;
+	
 	if(infinitySwitch == true){
 		defSizeLimit = "Infinity";
-	}//end if we should do infinite max size
-	
-	run("Analyze Particles...", "size=szMin-defSizeLimit "+
+		run("Analyze Particles...", "size=szMin-Infinity "+
 	"show=[Overlay Masks] display clear summarize");
+	}//end if we should do infinite max size
+	else{
+		run("Analyze Particles...", "size=szMin-defSizeLimit "+
+		"show=[Overlay Masks] display clear summarize");
+	}//end else use defined size limit
+	
 	if(showParticles && !is("Batch Mode")){
 		waitForUser("Particle showcase", "Particles should be outlined in blue\n"+
 		"Parts of the image within the threshold should be outlined in black");
