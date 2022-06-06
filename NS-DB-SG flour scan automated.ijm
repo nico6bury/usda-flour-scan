@@ -105,9 +105,9 @@ filesToProcess = getFilepaths(selectionMethod);
 if(useBatchMode){
 	if(showParticles){
 		showMessageWithCancel("Complication",
-		"You selected both that you wanted batch mode and that you wanted to show "+
-		"particles. This isn't really possible, so if you want to see particles, "+
-		"keep the option that mentions not showing pictures off. Press cancel to "+
+		"You selected both that you wanted batch mode and that you wanted to show\n"+
+		"particles. This isn't really possible, so if you want to see particles,\n"+
+		"keep the option that mentions not showing pictures off. Press cancel to\n"+
 		"immediately stop the macro.");
 	}//end if user also wants to show particles
 	setBatchMode("hide");
