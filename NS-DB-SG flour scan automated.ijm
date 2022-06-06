@@ -11,7 +11,7 @@ th01 = 170;
 
 // define temporary variables for storing dialog results
 // whether or not we'll use batch mode, which really speeds things up
-useBatchMode = false;
+useBatchMode = true;
 // all the valid selection methods we might use
 selectionMethods = newArray("Single File", "Multiple Files", "Directory");
 // the path of the file we're processing. Might be a directory
@@ -35,13 +35,13 @@ showParticles = false;
 // Warn the user if they want to view the particles of lots of images
 particleShowSoftLim = 10
 // whether or not to append threshold to summary
-appendThreshold = false;
+appendThreshold = true;
 // default lower size limit
 szMin=2;
 // default upper size limit
 defSizeLimit = 200;
 // whether or not to append size limit to summary
-appendSize = false;
+appendSize = true;
 
 // define dialog window
 Dialog.create("Macro Options");
