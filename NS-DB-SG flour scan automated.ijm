@@ -43,31 +43,9 @@ defSizeLimit = 200;
 // whether or not to append size limit to summary
 appendSize = true;
 
-// define dialog window
-Dialog.create("Macro Options");
-// first section, first line
-Dialog.addChoice("File Selection Method:", selectionMethods, selectionMethod);
-Dialog.addToSameRow();
-Dialog.addChoice("Current Operating System", validOSs, chosenOS);
-// second line
-//Dialog.addString("Results File Name", "Summary");
-Dialog.addSlider("Threshold", 1, 255, th01);
-Dialog.addToSameRow();
-Dialog.addCheckbox("Append Threshold to Summary Window", appendThreshold);
-// third line
-Dialog.addCheckboxGroup(2, 1, newArray("Don't draw images to improve performance",
-"Show progress bar with predicted times"), newArray(useBatchMode, shouldDisplayProgress));
-// fourth line
-Dialog.addCheckbox("Show Particle Detection on Image", false);
-// fifth line
-Dialog.addNumber("Lower Size Limit", szMin);
-Dialog.addToSameRow();
-Dialog.addNumber("Upper Size Limit", defSizeLimit);
-// sixth line
-Dialog.addCheckbox("Append Size limit to Summary Window", appendSize);
+// create dialog from file
+showDialog();
 
-// get selected options from dialog window
-Dialog.show();
 // get user selections from first line
 selectionMethod = Dialog.getChoice();
 chosenOS = Dialog.getChoice();
@@ -87,6 +65,9 @@ defSizeLimit = Dialog.getNumber();
 appendSize = Dialog.getCheckbox();
 // debug feature for doing infinite max size
 infinitySwitch = false;
+
+// save selections from user
+saveDialogConfig();
 
 // act on selected options from dialog window
 if(chosenOS == validOSs[1]){
@@ -227,6 +208,153 @@ function processFile(){
 ////////////// MAIN FUNCTION END ////////////////
 
 ///////////// START OF SUPPORT FUNCTIONS ///////////////
+
+/*
+ * Reads prior configuration from file, creates dialog, updates variables
+ */
+function showDialog(){
+	// read all the junk from the config file
+	serializationPath = serializationDirectory();
+	// a temporary variable required because of ImageJ's syntactic bitterness
+	temp = "\0";
+	if(File.exists(serializationPath)){
+		// get each line from the file
+		lines = split(File.openAsString(serializationPath), "\n");
+		for(i = 0; i < lengthOf(lines); i++){
+			currentLine = lines[i];
+			if(lengthOf(currentLine) >= 21){
+				if(substring(currentLine, 0, 21) == "shouldDisplayProgress"){
+					temp = split(currentLine, "=");
+					shouldDisplayProgress = parseInt(temp[1]);
+					continue;
+				}//end if this line has whether we should display progress bar
+			}//end if
+			if(lengthOf(currentLine) >= 16){
+				if(substring(currentLine, 0, 16) == "allowedFiletypes"){
+					listing = substring(currentLine, 18, lengthOf(currentLine)-1);
+					allowedFiletypes = split(listing, "|");
+					continue;
+				}//end if this line has the allowed file types information
+				else if(substring(currentLine, 0, 16) == "forbiddenStrings"){
+					listing = substring(currentLine, 18, lengthOf(currentLine) - 1);
+					forbiddenStrings = split(listing, "|");
+					continue;
+				}//end if this line has the forbidden strings information
+			}//end if
+			if(lengthOf(currentLine) >= 15){
+				if(substring(currentLine, 0, 15) == "selectionMethod"){
+					temp = split(currentLine, "=");
+					selectionMethod = temp[1];
+					continue;
+				}//end if this line has the selection method information
+				else if(substring(currentLine, 0, 15) == "appendThreshold"){
+					temp = split(currentLine, "=");
+					appendThreshold = parseInt(temp[1]);
+					continue;
+				}//end if this line has whether we should append threshold
+			}//end if 
+			if(lengthOf(currentLine) >= 12){
+				if(substring(currentLine, 0, 12) == "useBatchMode"){
+					temp = split(currentLine, "=");
+					temp = temp[1];
+					useBatchMode = parseInt(temp);
+					continue;
+				}//end if this line has the useBatchMode information
+				else if(substring(currentLine, 0, 12) == "defSizeLimit"){
+					temp = split(currentLine, "=");
+					defSizeLimit = parseInt(temp[1]);
+					continue;
+				}//end if this line has max size limit
+			}//end if 
+			if(lengthOf(currentLine) >= 10){
+				if(substring(currentLine, 0, 10) == "appendSize"){
+					temp = split(currentLine, "=");
+					appendSize = parseInt(temp[1]);
+					continue;
+				}//end if this line has whether we should append size limits
+			}//end if
+			if(lengthOf(currentLine) >= 8){
+				if(substring(currentLine, 0, 8) == "chosenOS"){
+					temp = split(currentLine, "=");
+					chosenOS = temp[1];
+					continue;
+				}//end if this line has the chosen operating system information
+			}//end if 
+			if(lengthOf(currentLine) >= 5){
+				if(substring(currentLine, 0, 5) == "szMin"){
+					temp = split(currentLine, "=");
+					szMin = parseInt(temp[1]);
+					continue;
+				}//end if this line has min size limit
+			}//end if
+			if(lengthOf(currentLine) >= 4){
+				if(substring(currentLine, 0, 4) == "th01"){
+					temp = split(currentLine, "=");
+					th01 = parseInt(temp[1]);
+					continue;
+				}//end if this line has the threshold info
+			}//end if
+		}//end looping over each line of the file
+	}//end if the config file exists
+	
+	// actually build the dialog now
+	Dialog.create("Macro Options");
+	// first section, first line
+	Dialog.addChoice("File Selection Method:", selectionMethods, selectionMethod);
+	Dialog.addToSameRow();
+	Dialog.addChoice("Current Operating System", validOSs, chosenOS);
+	// second line
+	//Dialog.addString("Results File Name", "Summary");
+	Dialog.addSlider("Threshold", 1, 255, Math.min(Math.max(th01, 1), 255));
+	Dialog.addToSameRow();
+	Dialog.addCheckbox("Append Threshold to Summary Window", appendThreshold);
+	// third line
+	Dialog.addCheckboxGroup(2, 1, newArray("Don't draw images to improve performance",
+	"Show progress bar with predicted times"), newArray(useBatchMode, shouldDisplayProgress));
+	// fourth line
+	Dialog.addCheckbox("Show Particle Detection on Image", false);
+	// fifth line
+	Dialog.addNumber("Lower Size Limit", szMin);
+	Dialog.addToSameRow();
+	Dialog.addNumber("Upper Size Limit", defSizeLimit);
+	// sixth line
+	Dialog.addCheckbox("Append Size limit to Summary Window", appendSize);
+	// actually make the window show up
+	Dialog.show();
+}//end showDialog()
+
+/*
+ * Saves the settings read from the dialog in a configuration file
+ */
+function saveDialogConfig(){
+	serializationPath = serializationDirectory();
+	fileVar = File.open(serializationPath);
+	// write all the important variables to the file
+	print(fileVar, String.join(newArray("th01", th01), "="));
+	print(fileVar, String.join(newArray("szMin", szMin), "="));
+	print(fileVar, String.join(newArray("defSizeLimit", defSizeLimit), "="));
+	print(fileVar, String.join(newArray("shouldDisplayProgress", shouldDisplayProgress), "="));
+	print(fileVar, String.join(newArray("appendThreshold", appendThreshold), "="));
+	print(fileVar, String.join(newArray("appendSize", appendSize), "="));
+	print(fileVar, String.join(newArray("chosenOS", chosenOS), "="));
+	print(fileVar, String.join(newArray("useBatchMode", useBatchMode), "="));
+	print(fileVar, String.join(newArray("selectionMethod", selectionMethod), "="));
+	// now for the annoying ones
+	expectedFileExtensionsStr = String.join(expectedFileExtensions, "|");
+	print(fileVar, String.join(newArray("allowedFiletypes", "[" + expectedFileExtensionsStr + "]"), "="));
+	forbiddenStringsStr = String.join(forbiddenStrings, "|");
+	print(fileVar, String.join(newArray("forbiddenStrings", "[" + forbiddenStringsStr + "]"), "="));
+}//end saveDialogConfig()
+
+function serializationDirectory(){
+	// generates a directory for serialization
+	macrDir = getDirectory("macros");
+	macrDir += "Macro-Configuration/";
+	File.makeDirectory(macrDir);
+	macrDir += "FlourScanMacroConfig.txt";
+	return macrDir;
+}//end serializationDirectory()
+
 function timeToString(mSec){
 	floater = d2s(mSec, 0);
 	floater2 = parseFloat(floater);
