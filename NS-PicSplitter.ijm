@@ -3,18 +3,75 @@
  * File: NS-PicSplitter.ijm
  * Purpose: To automate the process of splitting up a bunch
  * of flour scan images, complete with re-labelling them.
+ * Explanation of Parameter Passing: Each serialized parameter should be
+ * separated by the \r character. For each parameter, it should be the name
+ * followed by the value, separated by the ? character. When giving multiple
+ * files or strings, separate them by the \f character. Parameters not given
+ * will simply use the default.
  */
  
 ///////////// MAIN FUNCTION START ///////////////
+//// Parameters for the macro
+// List of files to be processed
+filesToProcess = newArray(0);
+// whether we should output files to a separate directory
+outputToSeparateDirectory = false;
+// the directory we should output the images to
+outputDir = "";
+// The possible methods of selecting files
+fileSelectionMethods = newArray("Single File", "Multiple Files",
+"Directory", "Multiple Directories");
+// the chosen method of selecting files
+fileSelectionMethod = fileSelectionMethods[2];
+// a list of strings to ignore when directory selecting
+forbiddenStrings = newArray("-Skip", "-Split", "-S");
 
-arguments = getArgument();
-if(lengthOf(arguments) == 0){
+argumentSerialized = getArgument();
+if(lengthOf(argumentSerialized) == 0){
 	// TODO: Figure out exactly what this macro will do
+	// do dialog stuff to figure out parameters
+	Dialog.createNonBlocking("Macro Options");
+	Dialog.addChoice("File Selection Method", fileSelectionMethods, fileSelectionMethod);
+	Dialog.addCheckbox("Output Split Images to Separate Directory", outputToSeparateDirectory);
+	Dialog.addString("Forbidden Strings", String.join(forbiddenStrings), 15);
+	Dialog.show();
+	// get options back from the dialog
+	fileSelectionMethod = Dialog.getChoice();
+	outputToSeparateDirectory = Dialog.getCheckbox();
+	forbiddenStrings = split(Dialog.getString(), ",");
+	// get a separate directory if we need one
+	if(outputToSeparateDirectory){
+		outputDir = getDirectory("Please choose the output directory.");
+	}//end if we need to get a separate output directory
+	// get the files to process
+	filesToProcess = getFilepaths(fileSelectionMethod);
 }//end if we just process things normally
 else{
 	// TODO: Implement Argument parsing
+	// parse out parameters from arguementSerialized
+	linesToProcess = split(argumentSerialized, "\r");
+	for(i = 0; i < lengthOf(linesToProcess); i++){
+		thisLine = split(linesToProcess[i], "?");
+		if(thisLine[0] == "filesToProcess"){
+			filesToProcess = split(thisLine[1], "\f");
+		}//end if this line contains files we should process
+		else if(thisLine[0] == "outputToSeparateDirectory"){
+			outputToSeparateDirectory = parseInt(thisLine[1]);
+		}//end if this line tells us whether to output to separate directory
+		else if(thisLine[0] == "outputDir"){
+			outputDir = thisLine[1];
+		}//end if this line tells us the output directory
+		else if(thisLine[0] == "forbiddenStrings"){
+			forbiddenStrings = split(thisLine[1], "\f");
+		}//end if this line tells of forbidden strings
+	}//end looping over lines to be deserialized
 }//end else we have to figure out the arguments
 
+// loop over all the files, processing each one appropriately
+for(i = 0; i < lengthOf(filesToProcess); i++){
+	// TODO: Split up each image
+	// TODO: Export each image
+}//end looping over each file we want to process
 
 ///////////// MAIN FUNCTION END /////////////////
 ///////////// EXTRA FUNCTION START //////////////
@@ -199,5 +256,42 @@ function contains(array, val){
 	}//end looping over array
 	return foundVal;
 }//end contains
+
+/*
+ * 
+ */
+function makeBackup(appendation){
+	// make backup in temp folder
+	// figure out the folder path
+	backupFolderDir = getDirectory("temp") + "imageJMacroBackup" + 
+	File.separator;
+	File.makeDirectory(backupFolderDir);
+	backupFolderDir += "HVAC" + File.separator;
+	// make sure the directory exists
+	File.makeDirectory(backupFolderDir);
+	// make file path
+	filePath = backupFolderDir + "backupImage-" + appendation + ".tif";
+	// save the image as a temporary image
+	save(filePath);
+}//end makeBackup()
+
+/*
+ * 
+ */
+function openBackup(appendation, shouldClose){
+	// closes active images and opens backup
+	// figure out the folder path
+	backupFolderDir = getDirectory("temp") + "imageJMacroBackup" + 
+	File.separator + "HVAC" + File.separator;
+	// make sure the directory exists
+	File.makeDirectory(backupFolderDir);
+	// make file path
+	filePath = backupFolderDir + "backupImage-" + appendation + ".tif";
+	// close whatever's open
+	if(shouldClose == true) close("*");
+	// open our backup
+	open(filePath);
+}//end openBackup
+
 
 ///////////// EXTRA FUNCTION END ////////////////
