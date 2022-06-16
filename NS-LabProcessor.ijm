@@ -18,13 +18,13 @@ filesToProcess = newArray(0);
 fileSelectionMethods = newArray("Single File", "Multiple Files",
 "Directory", "Multiple Directories");
 // the chosen method of selecting files
-fileSelectionMethod = fileSelectionMethods[2];
+fileSelectionMethod = fileSelectionMethods[0];
 // a list of strings to ignore when directory selecting
-forbiddenStrings = newArray("-Skip", "-L", "-R");
+forbiddenStrings = newArray("-Skip");
 // list of file extensions that are allowed
 allowedFiletypes = newArray("tif", "bmp");
 // whether or not to speed up processing with batch mode
-useBatchMode = true;
+useBatchMode = false;
 
 serializedArguments = getArgument();
 if(serializedArguments == ""){
@@ -63,24 +63,26 @@ else{
 
 // enter batch mode if needed
 if(useBatchMode){setBatchMode("hide");}
+// set the proper measurements
+run("Set Measurements...", "mean standard modal display redirect=None decimal=2");
 
 for(i = 0; i < lengthOf(filesToProcess); i++){
-	// TODO: Open current image
-	
-	// TODO: Split current image into stacks
-	
-	// TODO: Get id of each stack
-	
-	// TODO: Process results from each slice to get L* a* b*
-	
-	// TODO: Export results somewhere
+	// Open current image
+	open(filesToProcess[i]);
+	// set the right scale
+	run("Set Scale...", "distance=1 known=1 unit=[] global");
+	// Split current image into stack, L*a*b* split into channels
+	run("Lab Stack");
+	// process each channel at once
+	run("Measure Stack...");
+	// TODO: Export the results somehow
 	
 }//end looping all the files to process
 
 // exit batch mode if needed
 if(useBatchMode){setBatchMode("exit and display");}
 // show exit message if macro not headless
-if(lengthOf(argumentSerialized) == 0){
+if(lengthOf(serializedArguments) == 0){
 	waitForUser("Macro Execution Finished", "All images have been processed. "+
 	"\nMacro will exit when this dialog is closed.");
 }//end if we aren't headless
