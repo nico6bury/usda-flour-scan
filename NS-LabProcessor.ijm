@@ -11,6 +11,79 @@
  */
 
 ///////////// MAIN FUNCTION START ///////////////
+/// Paramters for the macro go here
+// List of files to be processed
+filesToProcess = newArray(0);
+// The possible methods of selecting files
+fileSelectionMethods = newArray("Single File", "Multiple Files",
+"Directory", "Multiple Directories");
+// the chosen method of selecting files
+fileSelectionMethod = fileSelectionMethods[2];
+// a list of strings to ignore when directory selecting
+forbiddenStrings = newArray("-Skip", "-L", "-R");
+// list of file extensions that are allowed
+allowedFiletypes = newArray("tif", "bmp");
+// whether or not to speed up processing with batch mode
+useBatchMode = true;
+
+serializedArguments = getArgument();
+if(serializedArguments == ""){
+	// do dialog stuff to figure out parameters
+	Dialog.createNonBlocking("Macro Options");
+	Dialog.addChoice("File Selection Method", fileSelectionMethods, fileSelectionMethod);
+	Dialog.addCheckbox("Batch Mode", useBatchMode);
+	Dialog.addString("Forbidden Strings", String.join(forbiddenStrings,","), 17);
+	Dialog.addString("Allowed File Extensions", String.join(allowedFiletypes,","), 17);
+	Dialog.show();
+	// get options back from the dialog
+	fileSelectionMethod = Dialog.getChoice();
+	forbiddenStrings = split(Dialog.getString(), ",");
+	allowedFiletypes = split(Dialog.getString(), ",");
+	// get the files to process
+	filesToProcess = getFilepaths(fileSelectionMethod);
+}//end if we don't have arguments
+else{
+	// automatically set batch mode to true
+	useBatchMode = true;
+	// parse out parameters from arguementSerialized
+	linesToProcess = split(argumentSerialized, "\r");
+	for(i = 0; i < lengthOf(linesToProcess); i++){
+		thisLine = split(linesToProcess[i], "?");
+		if(thisLine[0] == "filesToProcess"){
+			filesToProcess = split(thisLine[1], "\f");
+		}//end if this line contains files we should process
+		else if(thisLine[0] == "forbiddenStrings"){
+			forbiddenStrings = split(thisLine[1], "\f");
+		}//end if this line tells of forbidden strings
+		else if(thisLine[0] == "allowedFiletypes"){
+			allowedFiletypes = split(thisLine[1], "\f");
+		}//end if this line gives us the allowed file types
+	}//end looping over lines to be deserialized
+}//end else we got arguments from macro calling this one
+
+// enter batch mode if needed
+if(useBatchMode){setBatchMode("hide");}
+
+for(i = 0; i < lengthOf(filesToProcess); i++){
+	// TODO: Open current image
+	
+	// TODO: Split current image into stacks
+	
+	// TODO: Get id of each stack
+	
+	// TODO: Process results from each slice to get L* a* b*
+	
+	// TODO: Export results somewhere
+	
+}//end looping all the files to process
+
+// exit batch mode if needed
+if(useBatchMode){setBatchMode("exit and display");}
+// show exit message if macro not headless
+if(lengthOf(argumentSerialized) == 0){
+	waitForUser("Macro Execution Finished", "All images have been processed. "+
+	"\nMacro will exit when this dialog is closed.");
+}//end if we aren't headless
 
 ///////////// MAIN FUNCTION END /////////////////
 ///////////// EXTRA FUNCTION START //////////////
