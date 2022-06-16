@@ -27,7 +27,7 @@ chosenOS = validOSs[0];
 // filenames with these strings will be ignored in directory selection
 forbiddenStrings = newArray("-Skip");
 // the only file extension we won't ignore in directory selection
-expectedFileExtensions = newArray(".bmp",".tif",".tiff");
+expectedFileExtensions = newArray("bmp","tif","tiff");
 // save something before it's overwritten
 baseThreshold = th01;
 // whether we should display particle detection to the user
@@ -493,7 +493,7 @@ function areFilenamesValid(filenames, forbiddenStrings, allowDirectory){
 			// loop to look for all the forbidden strings
 			foundString = false;
 			tempVar = filenames[i];
-			fileExtension = substring(tempVar, lastIndexOf(tempVar, "."));
+			fileExtension = substring(tempVar, lastIndexOf(tempVar, ".")+1);
 			if(!contains(expectedFileExtensions, fileExtension)){
 				booleanArray[i] = false;
 			}//end if wrong file extension
