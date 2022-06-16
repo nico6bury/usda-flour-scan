@@ -22,13 +22,12 @@ outputDir = "";
 fileSelectionMethods = newArray("Single File", "Multiple Files",
 "Directory", "Multiple Directories");
 // the chosen method of selecting files
-fileSelectionMethod = fileSelectionMethods[2];
+fileSelectionMethod = fileSelectionMethods[0];
 // a list of strings to ignore when directory selecting
 forbiddenStrings = newArray("-Skip", "-Split", "-S");
 
 argumentSerialized = getArgument();
 if(lengthOf(argumentSerialized) == 0){
-	// TODO: Figure out exactly what this macro will do
 	// do dialog stuff to figure out parameters
 	Dialog.createNonBlocking("Macro Options");
 	Dialog.addChoice("File Selection Method", fileSelectionMethods, fileSelectionMethod);
@@ -47,7 +46,6 @@ if(lengthOf(argumentSerialized) == 0){
 	filesToProcess = getFilepaths(fileSelectionMethod);
 }//end if we just process things normally
 else{
-	// TODO: Implement Argument parsing
 	// parse out parameters from arguementSerialized
 	linesToProcess = split(argumentSerialized, "\r");
 	for(i = 0; i < lengthOf(linesToProcess); i++){
@@ -69,7 +67,32 @@ else{
 
 // loop over all the files, processing each one appropriately
 for(i = 0; i < lengthOf(filesToProcess); i++){
-	// TODO: Split up each image
+	// open the image for current file
+	open(filesToProcess[i]);
+	// capture id of original image
+	originalID = getImageID();
+	/// for now, we'll just assume the image is hotdog 
+	/// orientation and needs to be split into two squares
+	// get the dimensions of the image of the image
+	imgHeight = -1; imgWidth = -1; temp = -1;
+	getDimensions(imgWidth, imgHeight, temp, temp, temp);
+	// get the x-end-point for first half
+	xEnd1 = imgWidth / 2;
+	// make first selection to duplicate
+	makeRectangle(0, 0, xEnd1, imgHeight);
+	run("Duplicate...", "FirstDup");
+	// capture id of first duplicate
+	firstDupID = getImageID();
+	// reselect original image
+	if(isOpen(originalID)){selectImage(originalID);}
+	// make second selection and duplicate
+	makeRectangle(xEnd1, 0, imgWidth, imgHeight);
+	run("Duplicate...", "SecondDup");
+	// capture id of second duplicate
+	secondDupID = getImageID();
+	// close original image
+	selectImage(originalID);
+	close();
 	// TODO: Export each image
 }//end looping over each file we want to process
 
