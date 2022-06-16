@@ -22,9 +22,13 @@ outputDir = "";
 fileSelectionMethods = newArray("Single File", "Multiple Files",
 "Directory", "Multiple Directories");
 // the chosen method of selecting files
-fileSelectionMethod = fileSelectionMethods[0];
+fileSelectionMethod = fileSelectionMethods[2];
 // a list of strings to ignore when directory selecting
-forbiddenStrings = newArray("-Skip", "-Split", "-S");
+forbiddenStrings = newArray("-Skip", "-L", "-R");
+// list of file extensions that are allowed
+allowedFiletypes = newArray("tif", "bmp");
+// whether or not to speed up processing with batch mode
+useBatchMode = true;
 
 argumentSerialized = getArgument();
 if(lengthOf(argumentSerialized) == 0){
@@ -32,20 +36,25 @@ if(lengthOf(argumentSerialized) == 0){
 	Dialog.createNonBlocking("Macro Options");
 	Dialog.addChoice("File Selection Method", fileSelectionMethods, fileSelectionMethod);
 	Dialog.addCheckbox("Output Split Images to Separate Directory", outputToSeparateDirectory);
-	Dialog.addString("Forbidden Strings", String.join(forbiddenStrings), 15);
+	Dialog.addCheckbox("Batch Mode", useBatchMode);
+	Dialog.addString("Forbidden Strings", String.join(forbiddenStrings,","), 17);
+	Dialog.addString("Allowed File Extensions", String.join(allowedFiletypes,","), 17);
 	Dialog.show();
 	// get options back from the dialog
 	fileSelectionMethod = Dialog.getChoice();
 	outputToSeparateDirectory = Dialog.getCheckbox();
 	forbiddenStrings = split(Dialog.getString(), ",");
+	allowedFiletypes = split(Dialog.getString(), ",");
+	// get the files to process
+	filesToProcess = getFilepaths(fileSelectionMethod);
 	// get a separate directory if we need one
 	if(outputToSeparateDirectory){
 		outputDir = getDirectory("Please choose the output directory.");
 	}//end if we need to get a separate output directory
-	// get the files to process
-	filesToProcess = getFilepaths(fileSelectionMethod);
 }//end if we just process things normally
 else{
+	// automatically set batch mode to true
+	useBatchMode = true;
 	// parse out parameters from arguementSerialized
 	linesToProcess = split(argumentSerialized, "\r");
 	for(i = 0; i < lengthOf(linesToProcess); i++){
@@ -62,11 +71,19 @@ else{
 		else if(thisLine[0] == "forbiddenStrings"){
 			forbiddenStrings = split(thisLine[1], "\f");
 		}//end if this line tells of forbidden strings
+		else if(thisLine[0] == "allowedFiletypes"){
+			allowedFiletypes = split(thisLine[1], "\f");
+		}//end if this line gives us the allowed file types
 	}//end looping over lines to be deserialized
 }//end else we have to figure out the arguments
 
+// enter batch mode if needed
+if(useBatchMode){setBatchMode("hide");}
+
 // loop over all the files, processing each one appropriately
 for(i = 0; i < lengthOf(filesToProcess); i++){
+	/// Code below is a fine italian pasta, but
+	/// it's good enough for our purposes right now
 	// open the image for current file
 	open(filesToProcess[i]);
 	// capture id of original image
@@ -93,8 +110,34 @@ for(i = 0; i < lengthOf(filesToProcess); i++){
 	// close original image
 	selectImage(originalID);
 	close();
-	// TODO: Export each image
+	/// Export the images we split off from the original
+	// get the original name of original name
+	originalName = substring(filesToProcess[i], lastIndexOf(filesToProcess[i], File.separator) + 1, lastIndexOf(filesToProcess[i], "."));
+	// figure out new name of left image
+	leftImgName = originalName + "-L" + ".tif";
+	rightImgName = originalName + "-R" + ".tif";
+	// the directory to put the images in
+	if(!outputToSeparateDirectory){
+		outputDir = File.getDirectory(filesToProcess[i]) + "SplitImages" + File.separator;
+		if(!File.exists(outputDir)){File.makeDirectory(outputDir)};
+	}//end if we're exporting where we got the file
+	// save left image and close it afterwards
+	selectImage(firstDupID);
+	save(outputDir + leftImgName);
+	close();
+	// save right image and close it afterwards
+	selectImage(secondDupID);
+	save(outputDir + rightImgName);
+	close();
 }//end looping over each file we want to process
+
+// exit batch mode if needed
+if(useBatchMode){setBatchMode("exit and display");}
+// show exit message if macro not headless
+if(lengthOf(argumentSerialized) == 0){
+	waitForUser("Macro Execution Finished", "All images have been processed. "+
+	"\nMacro will exit when this dialog is closed.");
+}//end if we aren't headless
 
 ///////////// MAIN FUNCTION END /////////////////
 ///////////// EXTRA FUNCTION START //////////////
@@ -246,7 +289,7 @@ function areFilenamesValid(filenames, forbiddenStrings, allowDirectory){
 			// loop to look for all the forbidden strings
 			foundString = false;
 			tempVar = filenames[i];
-			fileExtension = substring(tempVar, lastIndexOf(tempVar, "."));
+			fileExtension = substring(tempVar, lastIndexOf(tempVar, ".") + 1);
 			if(!contains(allowedFiletypes, fileExtension)){
 				booleanArray[i] = false;
 			}//end if wrong file extension
