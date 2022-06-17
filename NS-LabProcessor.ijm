@@ -100,13 +100,10 @@ for(i = 0; i < lengthOf(filesToProcess); i++){
 	// process each channel at once
 	run("Measure Stack...");
 	// close the current image based on file name
-	close(File.getNameWithoutExtension(filesToProcess[i]));
+	close(File.getName(filesToProcess[i]));
 }//end looping all the files to process
 // We'll 'export' the results by renaming the results window
-if(isOpen("Results")){
-	selectWindow("Results");
-	rename(resultsName);
-}//end if the results window is actually open
+IJ.renameResults(resultsName);
 
 // exit batch mode if needed
 if(useBatchMode){setBatchMode("exit and display");}
