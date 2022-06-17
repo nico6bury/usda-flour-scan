@@ -18,8 +18,8 @@
  * 
  * Parameters that can be set in headless execution mode:
  * filesToProcess : array of filepaths
- * //forbiddenStrings : array of strings that can't be found in filepaths
- * //allowedFiletypes : array of file extensions without the dot to allow
+ * forbiddenStrings : won't do anything with current implementation
+ * allowedFiletypes : won't do anything with current implementation
  * resultsName : the name to set the results table to
  */
 
