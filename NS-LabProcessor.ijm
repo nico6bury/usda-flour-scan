@@ -67,7 +67,7 @@ else{
 	// automatically set batch mode to true
 	useBatchMode = true;
 	// parse out parameters from arguementSerialized
-	linesToProcess = split(argumentSerialized, "\r");
+	linesToProcess = split(serializedArguments, "\r");
 	for(i = 0; i < lengthOf(linesToProcess); i++){
 		thisLine = split(linesToProcess[i], "?");
 		if(thisLine[0] == "filesToProcess"){
