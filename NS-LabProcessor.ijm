@@ -3,16 +3,19 @@
  * File: NS-LabProcessor.ijm
  * Purpose: To get L* a* b* data from flour scans in a way that
  * can be used either by a user or a macro.
+ * 
  * Explanation of Parameter Passing: Each serialized parameter should be
  * separated by the \r character. For each parameter, it should be the name
  * followed by the value, separated by the ? character. When giving multiple
  * files or strings, separate them by the \f character. Parameters not given
  * will simply use the default.
+ * 
  * Pre-Execution Contract: This macro assumes that before being executed,
  * there does not exist an open window titled Results. If you want to run
  * this macro when the results window is open, it is recommended to either
  * close the window or rename it (possibly renaming it back to Results after
  * this macro has finished).
+ * 
  * Parameters that can be set in headless execution mode:
  * filesToProcess : array of filepaths
  * //forbiddenStrings : array of strings that can't be found in filepaths
