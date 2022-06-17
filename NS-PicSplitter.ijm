@@ -3,11 +3,21 @@
  * File: NS-PicSplitter.ijm
  * Purpose: To automate the process of splitting up a bunch
  * of flour scan images, complete with re-labelling them.
+ * 
  * Explanation of Parameter Passing: Each serialized parameter should be
  * separated by the \r character. For each parameter, it should be the name
  * followed by the value, separated by the ? character. When giving multiple
  * files or strings, separate them by the \f character. Parameters not given
  * will simply use the default.
+ * 
+ * Parameters that can be set in headless execution mode:
+ * filesToProcess : array of files to be processed by this macro
+ * outputToSeparateDirectory : bool of whether we should output files to separate
+ * directory somewhere.
+ * outputDir : the separate directory to be used if we're outputting to a separate
+ * directory.
+ * forbiddenStrings : won't do anything with current implementation
+ * allowedFiletypes : won't do anything with current implementation
  */
  
 ///////////// MAIN FUNCTION START ///////////////
