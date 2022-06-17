@@ -10,6 +10,14 @@
  * files or strings, separate them by the \f character. Parameters not given
  * will simply use the default.
  * 
+ * Pre-Execution Contract: This macro assumes that each image passed to it will
+ * be a 2400x1200 pixel image in hotdog orientation. 
+ * 
+ * Post-Execution Contract: If no outputDirectory is specified, the images will
+ * be put in a new directory local to each image's directory called SplitImages.
+ * The images will have -R or -L appended to their name, such that for an image
+ * called imgName.tif, the new images would be called imgName-R.tif and imgName-L.tif
+ * 
  * Parameters that can be set in headless execution mode:
  * filesToProcess : array of files to be processed by this macro
  * outputToSeparateDirectory : bool of whether we should output files to separate

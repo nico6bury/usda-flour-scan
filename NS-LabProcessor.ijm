@@ -16,11 +16,17 @@
  * close the window or rename it (possibly renaming it back to Results after
  * this macro has finished).
  * 
+ * Post-Execution Contract: When this macro exits, the results for the L*a*b*
+ * stuff will be in the results window, which has been renamed to the value of
+ * resultsName. Each individual image will correspond to three lines in the
+ * results table, namely for an image called imgName.tif, the lines will be
+ * labelled the following: imgName.tif:L*, imgName.tif:a*, imgName.tif:b*
+ * 
  * Parameters that can be set in headless execution mode:
  * filesToProcess : array of filepaths
+ * resultsName : the name to set the results table to
  * forbiddenStrings : won't do anything with current implementation
  * allowedFiletypes : won't do anything with current implementation
- * resultsName : the name to set the results table to
  */
 
 ///////////// MAIN FUNCTION START ///////////////
