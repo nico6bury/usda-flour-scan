@@ -8,6 +8,16 @@
  * followed by the value, separated by the ? character. When giving multiple
  * files or strings, separate them by the \f character. Parameters not given
  * will simply use the default.
+ * Pre-Execution Contract: This macro assumes that before being executed,
+ * there does not exist an open window titled Results. If you want to run
+ * this macro when the results window is open, it is recommended to either
+ * close the window or rename it (possibly renaming it back to Results after
+ * this macro has finished).
+ * Parameters that can be set in headless execution mode:
+ * filesToProcess : array of filepaths
+ * //forbiddenStrings : array of strings that can't be found in filepaths
+ * //allowedFiletypes : array of file extensions without the dot to allow
+ * resultsName : the name to set the results table to
  */
 
 ///////////// MAIN FUNCTION START ///////////////
@@ -25,6 +35,8 @@ forbiddenStrings = newArray("-Skip");
 allowedFiletypes = newArray("tif", "bmp");
 // whether or not to speed up processing with batch mode
 useBatchMode = false;
+// The name we'll give our results window
+resultsName = "L* a* b* Results";
 
 serializedArguments = getArgument();
 if(serializedArguments == ""){
@@ -58,6 +70,9 @@ else{
 		else if(thisLine[0] == "allowedFiletypes"){
 			allowedFiletypes = split(thisLine[1], "\f");
 		}//end if this line gives us the allowed file types
+		else if(thisLine[0] == "resultsName"){
+			resultsName = thisLine[1];
+		}//end if this line tells us what to name results file
 	}//end looping over lines to be deserialized
 }//end else we got arguments from macro calling this one
 
@@ -75,8 +90,11 @@ for(i = 0; i < lengthOf(filesToProcess); i++){
 	run("Lab Stack");
 	// process each channel at once
 	run("Measure Stack...");
-	// TODO: Export the results somehow
-	
+	// We'll 'export' the results by renaming the results window
+	if(isOpen("Results")){
+		selectWindow("Results");
+		rename(resultsName);
+	}//end if the results window is actually open
 }//end looping all the files to process
 
 // exit batch mode if needed
