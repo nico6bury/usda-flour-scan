@@ -99,12 +99,14 @@ for(i = 0; i < lengthOf(filesToProcess); i++){
 	run("Lab Stack");
 	// process each channel at once
 	run("Measure Stack...");
-	// We'll 'export' the results by renaming the results window
-	if(isOpen("Results")){
-		selectWindow("Results");
-		rename(resultsName);
-	}//end if the results window is actually open
+	// close the current image based on file name
+	close(File.getNameWithoutExtension(filesToProcess[i]));
 }//end looping all the files to process
+// We'll 'export' the results by renaming the results window
+if(isOpen("Results")){
+	selectWindow("Results");
+	rename(resultsName);
+}//end if the results window is actually open
 
 // exit batch mode if needed
 if(useBatchMode){setBatchMode("exit and display");}
