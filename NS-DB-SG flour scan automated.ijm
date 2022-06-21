@@ -216,8 +216,6 @@ if(appendSize){
 	}//end if the summary window is even open
 }//end if we should appent size limit to name of summary
 
-Array.show(filesProcessed);
-
 ///////////// MAIN FUNCTION START ///////////////
 
 /*
