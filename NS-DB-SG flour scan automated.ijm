@@ -184,6 +184,13 @@ if(shouldDisplayProgress){
 	+ timeToString(timeElapsed) + " sec.\tETA: 0 sec."); 
 }//end if we should display our progress
 
+// Add Lab Processing into the mix
+for(i = 0; i < filesProcessedCount; i++){
+	// TODO: Figure out Lab processing.
+}//end doing LabProcessing for each file actually processed
+
+// TODO: Stitch Lab results and normal Summary together for complete table
+
 if(useBatchMode){
 	setBatchMode("exit and display");
 }//end if we have been using batch mode
