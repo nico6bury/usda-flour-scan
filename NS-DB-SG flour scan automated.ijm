@@ -85,6 +85,11 @@ if(chosenOS == validOSs[1]){
 	"so please proceed with caution.");
 }//end if chosenOS was Windows 7
 
+// go ahead and grab the path to helper macros for later
+thisMacroDir = File.getDirectory(getInfo("macro.filepath"));
+picSplitterPath = thisMacroDir + "NS-PicSplitter.ijm";
+labProcessorPath = thisMacroDir + "NS-LabProcessor.ijm";
+
 // start actually processing all the files
 // based on the selection method provided by user and 
 // a whole bunch of tests and checks, gets valid file names
@@ -115,6 +120,9 @@ timeBeforeProc = getTime();
 if(shouldDisplayProgress){
 	run("Text Window...", "name="+ prgBarTitle +"width=70 height=2.5 monospaced");
 }//end if we should display progress
+// array of the files we actually processed
+filesProcessed = newArray(6);
+filesProcessedCount = 0;
 for(i = 0; i < lengthOf(filesToProcess); i++){
 	if(shouldDisplayProgress){
 		// display a progress window thing
@@ -128,8 +136,44 @@ for(i = 0; i < lengthOf(filesToProcess); i++){
 
 	// actually actually start processing
 	open(filesToProcess[i]);
-	processFile();
-	
+	// figure out the dimensions of this image
+	temp = 0;
+	imgWidth = -1;
+	imgHeight = -1;
+	getDimensions(imgWidth, imgHeight, temp, temp, temp);
+	if(imgWidth == splitWidth && imgHeight == splitHeight){
+		// close the current image, as we no longer need it in this macro
+		close();
+		// assemble individual parameters for PicSplitter macro
+		filesToSplitParameter = String.join(newArray("filesToProcess", filesToProcess[i]), "?");
+		outputDirParameter = String.join(newArray("outputToSeparateDirectory", 0), "?");
+		// put the parameters together into one string to send to the macro
+		fullParameterString = String.join(newArray(filesToSplitParameter, outputDirParameter), "\r");
+		// actually run the macro to split the image
+		runMacro(picSplitterPath, fullParameterString);
+		// figure out what the paths for the two split images should be
+		splitImageDir = File.getDirectory(filesToProcess[i]) + "SplitImages" + File.separator;
+		originalImageName = File.getNameWithoutExtension(filesToProcess[i]);
+		leftSplitImage = splitImageDir + originalImageName + "-L" + ".tif";
+		rightSplitImage = splitImageDir + originalImageName + "-R" + ".tif";
+		// process left image and update array
+		open(leftSplitImage);
+		processFile();
+		close();
+		arrayAppend(filesProcessed, filesProcessedCount, leftSplitImage); filesProcessedCount++;
+		// process right image and update array
+		open(rightSplitImage);
+		processFile();
+		close();
+		arrayAppend(filesProcessed, filesProcessedCount, rightSplitImage); filesProcessedCount++;
+	}//end if we need to split the file first
+	else{
+		// process the current image and then close it
+		processFile();
+		close();
+		// update array of processed images
+		arrayAppend(filesProcessed, filesProcessedCount, filesToProcess[i]); filesProcessedCount++;
+	}//end else we can just process the image like normal
 	run("Close All");
 }//end looping over each file we need to process
 
@@ -171,6 +215,8 @@ if(appendSize){
 		curSummaryTitle = newSummaryTitle;
 	}//end if the summary window is even open
 }//end if we should appent size limit to name of summary
+
+Array.show(filesProcessed);
 
 ///////////// MAIN FUNCTION START ///////////////
 
@@ -537,6 +583,18 @@ function contains(array, val){
 	}//end looping over array
 	return foundVal;
 }//end contains
+
+/*
+ * Handles appending a value to an array by automatically
+ * expanding the array if need be. Doesn't update the count
+ * due to the limitations of the imagej macro language.
+ */
+function arrayAppend(array, count, val){
+	if(lengthOf(array) >= count){
+		Array.concat(array,newArray(lengthOf(array) / 5));
+	}//end if we need to expand array
+	array[count] = val;
+}//end arrayAppend(array, count, val)
 
 // close down the macro
 waitForUser("End of Macro", "When this message box is closed, the macro will terminate");
