@@ -42,6 +42,10 @@ szMin=2;
 defSizeLimit = 200;
 // whether or not to append size limit to summary
 appendSize = true;
+// width that we'd expect for an image that needs to be split
+splitWidth = 2400;
+// height that we'd expect for an image that needs to be split
+splitHeight = 1200;
 
 // create dialog from file
 showDialog();
@@ -63,6 +67,9 @@ szMin = Dialog.getNumber();
 defSizeLimit = Dialog.getNumber();
 // get user selection from sixth line
 appendSize = Dialog.getCheckbox();
+// get resolution information
+splitWidth = Dialog.getNumber();
+splitHeight = Dialog.getNumber();
 // debug feature for doing infinite max size
 infinitySwitch = false;
 
@@ -319,6 +326,9 @@ function showDialog(){
 	Dialog.addNumber("Upper Size Limit", defSizeLimit);
 	// sixth line
 	Dialog.addCheckbox("Append Size limit to Summary Window", appendSize);
+	// display settings for resolution stuff
+	Dialog.addMessage("Resolution of Images that need to be Split");
+	Dialog.addNumber("Width", splitWidth); Dialog.addToSameRow(); Dialog.addNumber("Height", splitHeight);
 	// actually make the window show up
 	Dialog.show();
 }//end showDialog()
