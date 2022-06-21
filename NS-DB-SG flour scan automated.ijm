@@ -238,9 +238,7 @@ function processFile(){
 	
 	run("8-bit");
 	
-	//run("Threshold...");
 	setThreshold(0, th01);
-	//setOption("BlackBackground", false);
 	run("Convert to Mask");
 
 	// set the scale so it doesn't measure in mm or something
@@ -248,14 +246,13 @@ function processFile(){
 	// specify the measurement data to recieve from analyze particles
 	run("Set Measurements...", "area perimeter bounding redirect=None decimal=1");
 	
-	
 	if(infinitySwitch == true){
 		run("Analyze Particles...", "size=szMin-Infinity "+
-		"show=[Overlay Masks] display clear summarize");
+		"show=[Overlay Masks] clear summarize");
 	}//end if we should do infinite max size
 	else{
 		run("Analyze Particles...", "size=szMin-defSizeLimit "+
-		"show=[Overlay Masks] display clear summarize");
+		"show=[Overlay Masks] clear summarize");
 	}//end else use defined size limit
 	
 	if(showParticles && !is("Batch Mode")){
