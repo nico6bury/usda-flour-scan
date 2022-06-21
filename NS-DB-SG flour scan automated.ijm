@@ -86,7 +86,9 @@ if(chosenOS == validOSs[1]){
 }//end if chosenOS was Windows 7
 
 // go ahead and grab the path to helper macros for later
-thisMacroDir = File.getDirectory(getInfo("macro.filepath"));
+
+thisMacroDir = fixDirectory(getDirectory("macros"));
+thisMacroDir = thisMacroDir + "usda-flour-scan" + File.separator;
 picSplitterPath = thisMacroDir + "NS-PicSplitter.ijm";
 labProcessorPath = thisMacroDir + "NS-LabProcessor.ijm";
 
@@ -188,6 +190,16 @@ if(shouldDisplayProgress){
 // Add Lab Processing into the mix
 for(i = 0; i < filesProcessedCount; i++){
 	// TODO: Figure out Lab processing.
+	// set up parameters to send to LabProcessing
+	resultsName = "L*a*b* Results";
+	resultsNameParam = String.join(newArray("resultsName",resultsName), "?");
+	filesToProcessParam = String.join(
+		newArray("filesToProcess", String.join(
+			Array.slice(filesProcessed,0,filesProcessedCount), "\f");
+		), "?");
+	fullParameterString = String.join(newArray(resultsNameParam, filesToProcessParam), "\r");
+	// send parameters over to the Lab Processing macro
+	runMacro(labProcessorPath, fullParameterString);
 }//end doing LabProcessing for each file actually processed
 
 // TODO: Stitch Lab results and normal Summary together for complete table
@@ -260,6 +272,28 @@ function processFile(){
 		"Parts of the image within the threshold should be outlined in black");
 	}//end if particles can be visible and they should be
 }//end processFile(filename)
+
+/*
+ * Fixes the directory issues present with all the directory
+ * functions other than getDirectory("home"), which seems to
+ * be inexplicably untouched and therefore used as a basis
+ * for other directories.
+ */
+function fixDirectory(directory){
+	homeDirectory = getDirectory("home");
+	homeDirectory = substring(homeDirectory, 0, lengthOf(homeDirectory) - 1);
+	username = substring(homeDirectory, lastIndexOf(homeDirectory, File.separator)+1);
+	userStartIndex = indexOf(homeDirectory, username);
+	userEndIndex = lengthOf(homeDirectory);
+	
+	firstDirPart = substring(directory, 0, userStartIndex);
+	print(firstDirPart);
+	thirdDirPart = substring(directory, indexOf(directory, File.separator, lengthOf(firstDirPart)));
+	print(thirdDirPart);
+	
+	fullDirectory = firstDirPart + username + thirdDirPart;
+	return fullDirectory;
+}//end fixDirectory(directory)
 
 ////////////// MAIN FUNCTION END ////////////////
 
