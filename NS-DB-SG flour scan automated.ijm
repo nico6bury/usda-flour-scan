@@ -152,7 +152,8 @@ for(i = 0; i < lengthOf(filesToProcess); i++){
 		// actually run the macro to split the image
 		runMacro(picSplitterPath, fullParameterString);
 		// figure out what the paths for the two split images should be
-		splitImageDir = File.getDirectory(filesToProcess[i]) + "SplitImages" + File.separator;
+		splitImageDir = File.getDirectory(filesToProcess[i]);
+		splitImageDir = splitImageDir + "SplitImages" + substring(splitImageDir, lengthOf(splitImageDir) - 1);
 		originalImageName = File.getNameWithoutExtension(filesToProcess[i]);
 		leftSplitImage = splitImageDir + originalImageName + "-L" + ".tif";
 		rightSplitImage = splitImageDir + originalImageName + "-R" + ".tif";
