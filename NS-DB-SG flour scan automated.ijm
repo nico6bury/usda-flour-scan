@@ -25,7 +25,7 @@ validOSs = newArray("Windows 10", "Windows 7");
 // chosen operating system
 chosenOS = validOSs[0];
 // filenames with these strings will be ignored in directory selection
-forbiddenStrings = newArray("-Skip");
+forbiddenStrings = newArray("-Skip", "-L", "-R");
 // the only file extension we won't ignore in directory selection
 expectedFileExtensions = newArray("bmp","tif","tiff");
 // save something before it's overwritten
@@ -189,7 +189,7 @@ if(shouldDisplayProgress){
 
 // Add Lab Processing into the mix
 // set up parameters to send to LabProcessing
-resultsName = "L*a*b* Results";
+resultsName = "LabResults";
 resultsNameParam = String.join(newArray("resultsName",resultsName), "?");
 filesToProcessParam = String.join(
 	newArray("filesToProcess", String.join(
@@ -200,6 +200,7 @@ fullParameterString = String.join(newArray(resultsNameParam, filesToProcessParam
 runMacro(labProcessorPath, fullParameterString);
 
 // TODO: Stitch Lab results and normal Summary together for complete table
+
 
 if(useBatchMode){
 	setBatchMode("exit and display");
