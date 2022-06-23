@@ -285,9 +285,9 @@ function fixDirectory(directory){
 	userEndIndex = lengthOf(homeDirectory);
 	
 	firstDirPart = substring(directory, 0, userStartIndex);
-	print(firstDirPart);
+	//print(firstDirPart);
 	thirdDirPart = substring(directory, indexOf(directory, File.separator, lengthOf(firstDirPart)));
-	print(thirdDirPart);
+	//print(thirdDirPart);
 	
 	fullDirectory = firstDirPart + username + thirdDirPart;
 	return fullDirectory;
