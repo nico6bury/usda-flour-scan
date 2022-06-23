@@ -188,19 +188,16 @@ if(shouldDisplayProgress){
 }//end if we should display our progress
 
 // Add Lab Processing into the mix
-for(i = 0; i < filesProcessedCount; i++){
-	// TODO: Figure out Lab processing.
-	// set up parameters to send to LabProcessing
-	resultsName = "L*a*b* Results";
-	resultsNameParam = String.join(newArray("resultsName",resultsName), "?");
-	filesToProcessParam = String.join(
-		newArray("filesToProcess", String.join(
-			Array.slice(filesProcessed,0,filesProcessedCount), "\f");
-		), "?");
-	fullParameterString = String.join(newArray(resultsNameParam, filesToProcessParam), "\r");
-	// send parameters over to the Lab Processing macro
-	runMacro(labProcessorPath, fullParameterString);
-}//end doing LabProcessing for each file actually processed
+// set up parameters to send to LabProcessing
+resultsName = "L*a*b* Results";
+resultsNameParam = String.join(newArray("resultsName",resultsName), "?");
+filesToProcessParam = String.join(
+	newArray("filesToProcess", String.join(
+		Array.slice(filesProcessed,0,filesProcessedCount), "\f")
+	), "?");
+fullParameterString = String.join(newArray(resultsNameParam, filesToProcessParam), "\r");
+// send parameters over to the Lab Processing macro, process all the files at once
+runMacro(labProcessorPath, fullParameterString);
 
 // TODO: Stitch Lab results and normal Summary together for complete table
 
