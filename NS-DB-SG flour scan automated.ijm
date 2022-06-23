@@ -6,7 +6,7 @@
 //
 
 // upper threshold for processing
-th01 = 170;
+th01 = 160;
 
 
 // define temporary variables for storing dialog results
