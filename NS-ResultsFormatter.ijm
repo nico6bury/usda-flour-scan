@@ -48,19 +48,19 @@ if(lengthOf(serializedArguments) == 0){
 }//end if we don't have arguments to read
 else{
 	// automatically set batch mode to true
-	useBatchMode = true;
+	//useBatchMode = true;
 	// parse out parameters from arguementSerialized
 	linesToProcess = split(serializedArguments, "\r");
 	for(i = 0; i < lengthOf(linesToProcess); i++){
 		thisLine = split(linesToProcess[i], "?");
 		if(thisLine[0] == "mainSummaryName"){
-			filesToProcess = thisLine[1];
+			mainSummaryName = thisLine[1];
 		}//end if this line contains main summary name
-		else if(thisLine[0] == "forbiddenStrings"){
-			filesToProcess = thisLine[1];
+		else if(thisLine[0] == "labResultsName"){
+			labResultsName = thisLine[1];
 		}//end if this line contains lab results name
-		else if(thisLine[0] == "allowedFiletypes"){
-			filesToProcess = parseInt(thisLine[1]);
+		else if(thisLine[0] == "nFilesProcessed"){
+			nFilesProcessed = parseInt(thisLine[1]);
 		}//end if this line gives us the number of files that were processed
 	}//end looping over lines to be deserialized
 }//end else we need to parse the arguments we've been given
