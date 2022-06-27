@@ -92,6 +92,7 @@ thisMacroDir = fixDirectory(getDirectory("macros"));
 thisMacroDir = thisMacroDir + "usda-flour-scan" + File.separator;
 picSplitterPath = thisMacroDir + "NS-PicSplitter.ijm";
 labProcessorPath = thisMacroDir + "NS-LabProcessor.ijm";
+resultsFormatterPath = thisMacroDir + "NS-ResultsFormatter.ijm";
 
 // start actually processing all the files
 // based on the selection method provided by user and 
@@ -200,9 +201,6 @@ fullParameterString = String.join(newArray(resultsNameParam, filesToProcessParam
 // send parameters over to the Lab Processing macro, process all the files at once
 runMacro(labProcessorPath, fullParameterString);
 
-// TODO: Stitch Lab results and normal Summary together for complete table
-
-
 if(useBatchMode){
 	setBatchMode(false);
 }//end if we have been using batch mode
@@ -234,6 +232,14 @@ if(appendSize){
 		curSummaryTitle = newSummaryTitle;
 	}//end if the summary window is even open
 }//end if we should appent size limit to name of summary
+
+// TODO: Stitch Lab results and normal Summary together for complete table
+// build arguments that need to be sent to ResultsFormatter macro
+mainSummaryParam = String.join(newArray("mainSummaryName", curSummaryTitle), "?");
+labResultsParam = String.join(newArray("labResultsName", resultsName), "?");
+filesProccedParam = String.join(newArray("nFilesProcessed", filesProcessedCount), "?");
+fullParameterString = String.join(newArray(mainSummaryParam, labResultsParam, filesProccedParam), "\r");
+runMacro(resultsFormatterPath, fullParameterString);
 
 ///////////// MAIN FUNCTION START ///////////////
 
