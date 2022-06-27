@@ -1,9 +1,10 @@
-//
-//  NS-DB-SG  May26 flour scan automated 10
-//  May2022
-//
-//   simplified particle counts of smut?
-//
+/*
+ * Author: Nicholas Sixbury (someprocessing code 
+ * taken from simpler macro by Sophia Grothe and Daniel Brabec)
+ * File: NS-FlourScan-Main.ijm
+ * Purpose: To serve as the main coordinator macro for all the
+ * processes required for processing of flour scans in imagej.
+ */
 
 // upper threshold for processing
 th01 = 160;
