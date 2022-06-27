@@ -96,7 +96,7 @@ else{
 }//end else we have to figure out the arguments
 
 // enter batch mode if needed
-if(useBatchMode){setBatchMode("hide");}
+if(useBatchMode == true && !is("Batch Mode")){setBatchMode(true);}
 
 // loop over all the files, processing each one appropriately
 for(i = 0; i < lengthOf(filesToProcess); i++){
@@ -149,8 +149,7 @@ for(i = 0; i < lengthOf(filesToProcess); i++){
 	close();
 }//end looping over each file we want to process
 
-// exit batch mode if needed
-if(useBatchMode){setBatchMode("exit and display");}
+// batch mode will be automatically turned off if need be
 // show exit message if macro not headless
 if(lengthOf(argumentSerialized) == 0){
 	waitForUser("Macro Execution Finished", "All images have been processed. "+

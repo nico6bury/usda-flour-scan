@@ -106,7 +106,7 @@ if(useBatchMode){
 		"keep the option that mentions not showing pictures off. Press cancel to\n"+
 		"immediately stop the macro.");
 	}//end if user also wants to show particles
-	setBatchMode("hide");
+	setBatchMode(useBatchMode);
 }//end if we should use batch mode
 if(showParticles && lengthOf(filesToProcess) > particleShowSoftLim){
 	showMessageWithCancel("Quick Warning","Just an FYI, you have " +
@@ -204,7 +204,7 @@ runMacro(labProcessorPath, fullParameterString);
 
 
 if(useBatchMode){
-	setBatchMode("exit and display");
+	setBatchMode(false);
 }//end if we have been using batch mode
 
 curSummaryTitle = "Summary";
@@ -440,7 +440,7 @@ function saveDialogConfig(){
 
 function serializationDirectory(){
 	// generates a directory for serialization
-	macrDir = getDirectory("macros");
+	macrDir = fixDirectory(getDirectory("macros"));
 	macrDir += "Macro-Configuration/";
 	File.makeDirectory(macrDir);
 	macrDir += "FlourScanMacroConfig.txt";
