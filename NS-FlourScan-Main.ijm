@@ -201,9 +201,6 @@ filesToProcessParam = String.join(
 fullParameterString = String.join(newArray(resultsNameParam, filesToProcessParam), "\r");
 // send parameters over to the Lab Processing macro, process all the files at once
 runMacro(labProcessorPath, fullParameterString);
-Array.show(filesProcessed);
-print(filesProcessedCount);
-waitForUser("We have Lab stuff, right?");
 
 
 if(useBatchMode){
@@ -212,7 +209,7 @@ if(useBatchMode){
 
 curSummaryTitle = "Summary";
 
-if(appendThreshold && false){
+if(appendThreshold){
 	if(isOpen(curSummaryTitle)){
 		selectWindow(curSummaryTitle);
 		curSummaryTitle = getInfo("window.title");
@@ -222,7 +219,7 @@ if(appendThreshold && false){
 	}//end if the summary window is even open
 }//end if we should append threshold to name of summary
 
-if(appendSize && false){
+if(appendSize){
 	if(isOpen(curSummaryTitle)){
 		selectWindow(curSummaryTitle);
 		curSummaryTitle = getInfo("window.title");
