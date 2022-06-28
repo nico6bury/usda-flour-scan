@@ -126,11 +126,11 @@ for(i = 0; i < nFilesProcessed; i++){
 	thisBLine = split(labResults[bi], "\t");
 	// add the stuff from lab columns where its supposed to go
 	Table.set("L*Mean", i, thisLLine[meanIndex]);
-	Table.set("L*StdDev", i, thisLLine[sdevIndex]);
+	Table.set("L*dev", i, thisLLine[sdevIndex]);
 	Table.set("a*Mean", i, thisALine[meanIndex]);
-	Table.set("a*StdDev", i, thisALine[sdevIndex]);
+	Table.set("a*dev", i, thisALine[sdevIndex]);
 	Table.set("b*Mean", i, thisBLine[meanIndex]);
-	Table.set("b*StdDev", i, thisBLine[sdevIndex]);
+	Table.set("b*dev", i, thisBLine[sdevIndex]);
 }//end looping over each file that has been processed
 
 function arrayIndexOf(array, value){
