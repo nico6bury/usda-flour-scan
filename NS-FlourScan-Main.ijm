@@ -40,7 +40,7 @@ appendThreshold = true;
 // default lower size limit
 szMin=2;
 // default upper size limit
-defSizeLimit = 200;
+defSizeLimit = 1000;
 // whether or not to append size limit to summary
 appendSize = true;
 // width that we'd expect for an image that needs to be split
