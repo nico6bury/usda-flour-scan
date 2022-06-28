@@ -237,7 +237,6 @@ if(appendSize){
 	}//end if the summary window is even open
 }//end if we should appent size limit to name of summary
 
-// TODO: Stitch Lab results and normal Summary together for complete table
 // build arguments that need to be sent to ResultsFormatter macro
 mainSummaryParam = String.join(newArray("mainSummaryName", curSummaryTitle), "?");
 labResultsParam = String.join(newArray("labResultsName", resultsName), "?");
