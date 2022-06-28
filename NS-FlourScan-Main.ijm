@@ -130,6 +130,7 @@ filesProcessedCount = 0;
 for(i = 0; i < lengthOf(filesToProcess); i++){
 	if(shouldDisplayProgress){
 		// display a progress window thing
+		// TODO: Fix progress bar to actually work with current processing process
 		timeElapsed = getTime() - timeBeforeProc;
 		timePerFile = timeElapsed / (i+1);
 		eta = timePerFile * (lengthOf(filesToProcess) - i);
@@ -165,12 +166,12 @@ for(i = 0; i < lengthOf(filesToProcess); i++){
 		open(leftSplitImage);
 		processFile();
 		close();
-		arrayAppend(filesProcessed, filesProcessedCount, leftSplitImage); filesProcessedCount++;
+		filesProcessed = arrayAppend(filesProcessed, filesProcessedCount, leftSplitImage); filesProcessedCount++;
 		// process right image and update array
 		open(rightSplitImage);
 		processFile();
 		close();
-		arrayAppend(filesProcessed, filesProcessedCount, rightSplitImage); filesProcessedCount++;
+		filesProcessed = arrayAppend(filesProcessed, filesProcessedCount, rightSplitImage); filesProcessedCount++;
 	}//end if we need to split the file first
 	else{
 		// process the current image and then close it
@@ -200,6 +201,10 @@ filesToProcessParam = String.join(
 fullParameterString = String.join(newArray(resultsNameParam, filesToProcessParam), "\r");
 // send parameters over to the Lab Processing macro, process all the files at once
 runMacro(labProcessorPath, fullParameterString);
+Array.show(filesProcessed);
+print(filesProcessedCount);
+waitForUser("We have Lab stuff, right?");
+
 
 if(useBatchMode){
 	setBatchMode(false);
@@ -207,7 +212,7 @@ if(useBatchMode){
 
 curSummaryTitle = "Summary";
 
-if(appendThreshold){
+if(appendThreshold && false){
 	if(isOpen(curSummaryTitle)){
 		selectWindow(curSummaryTitle);
 		curSummaryTitle = getInfo("window.title");
@@ -217,7 +222,7 @@ if(appendThreshold){
 	}//end if the summary window is even open
 }//end if we should append threshold to name of summary
 
-if(appendSize){
+if(appendSize && false){
 	if(isOpen(curSummaryTitle)){
 		selectWindow(curSummaryTitle);
 		curSummaryTitle = getInfo("window.title");
@@ -636,6 +641,7 @@ function arrayAppend(array, count, val){
 		Array.concat(array,newArray(lengthOf(array) / 5));
 	}//end if we need to expand array
 	array[count] = val;
+	return array;
 }//end arrayAppend(array, count, val)
 
 // close down the macro
