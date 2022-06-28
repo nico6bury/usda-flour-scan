@@ -189,6 +189,8 @@ if(shouldDisplayProgress){
 	lengthOf(filesToProcess) + " files have been processed.\n" + "Time Elapsed: "
 	+ timeToString(timeElapsed) + " sec.\tETA: 0 sec."); 
 }//end if we should display our progress
+// go ahead and end the progress bar for now
+if(shouldDisplayProgress){print(prgBarTitle,"\\Close");}
 
 // Add Lab Processing into the mix
 // set up parameters to send to LabProcessing
@@ -647,4 +649,3 @@ run("Close All");
 run("Clear Results");
 if(isOpen("Results")){selectWindow("Results"); run("Close");}
 if(isOpen("Log")){selectWindow("Log"); run("Close");}
-if(shouldDisplayProgress){print(prgBarTitle,"\\Close");}
