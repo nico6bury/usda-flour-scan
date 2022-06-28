@@ -85,7 +85,7 @@ String.copyResults;
 labResults = split(String.paste, "\n");
 run("Close");
 // create the table we'll use for displaying everything
-finalResultsName = "ResultsTable";
+finalResultsName = mainSummaryName;
 Table.create(finalResultsName);
 
 // figure out column indices before we start iteration
