@@ -40,7 +40,7 @@ if(lengthOf(serializedArguments) == 0){
 	Dialog.create(" Macro Options ???");
 	Dialog.addString("Main Summary Name", mainSummaryName, 15);
 	Dialog.addString("L*a*b* Results Name", labResultsName, 15);
-	Dialog.addNumber("Number of Files Processed", 0);
+	Dialog.addNumber("Number of Files Processed", nFilesProcessed);
 	Dialog.show();
 	mainSummaryName = Dialog.getString();
 	labResultsName = Dialog.getString();
@@ -71,3 +71,74 @@ else{
 /// 3. Add processed filenames to the new table along with non-processed stuff
 /// 4. At the same time, for each line in results table we get, get three lines
 /// 	from Lab table, add those to right places
+
+// strip results from given windows in order to use it in processing.
+selectWindow(mainSummaryName);
+IJ.renameResults(mainSummaryName,"Results");
+String.copyResults;
+// note: lines separated by \n, columns by \t, first column is space
+summaryResults = split(String.paste, "\n");
+run("Close");
+selectWindow(labResultsName);
+IJ.renameResults(labResultsName,"Results");
+String.copyResults;
+labResults = split(String.paste, "\n");
+run("Close");
+// create the table we'll use for displaying everything
+finalResultsName = "ResultsTable";
+Table.create(finalResultsName);
+
+// figure out column indices before we start iteration
+summaryColumns = split(summaryResults[0], "\t");
+labColumns = split(labResults[0], "\t");
+sliceIndex = arrayIndexOf(summaryColumns, "Slice");
+countIndex = arrayIndexOf(summaryColumns, "Count");
+pixelsIndex = arrayIndexOf(summaryColumns, "Total Area");
+percentIndex = arrayIndexOf(summaryColumns, "%Area");
+meanIndex = arrayIndexOf(labColumns, "Mean");
+sdevIndex = arrayIndexOf(labColumns, "StdDev");
+
+for(i = 0; i < nFilesProcessed; i++){
+	// make sure we have the right window selected
+	selectWindow(finalResultsName);
+	// get the lines from summary table split up for easy use
+	thisSummaryLine = split(summaryResults[i+1], "\t");
+	// process slice column to separate the information we want
+	nameWoExtn = thisSummaryLine[sliceIndex];
+	nameWoExtn = substring(nameWoExtn, 0, indexOf(nameWoExtn, "."));
+	nameSplit = split(nameWoExtn, "-");
+	// add the names we figured out to the cool table we're building
+	Table.set("Rep", i, nameSplit[0]);
+	Table.set("Slice", i, nameSplit[1]);
+	Table.set("Rot", i, nameSplit[2]);
+	Table.set("Side", i, nameSplit[3]);
+	// add non-processed columns to right place in the table
+	Table.set("Count", i, thisSummaryLine[countIndex]);
+	Table.set("Pixels", i, thisSummaryLine[pixelsIndex]);
+	Table.set("%Area", i, thisSummaryLine[percentIndex]);
+	// get indices for lab columns
+	li = i * 3 + 1;
+	ai = i * 3 + 2;
+	bi = i * 3 + 3;
+	// split up the three lab lines we want
+	thisLLine = split(labResults[li], "\t");
+	thisALine = split(labResults[ai], "\t");
+	thisBLine = split(labResults[bi], "\t");
+	// add the stuff from lab columns where its supposed to go
+	Table.set("L*Mean", i, thisLLine[meanIndex]);
+	Table.set("L*StdDev", i, thisLLine[sdevIndex]);
+	Table.set("a*Mean", i, thisALine[meanIndex]);
+	Table.set("a*StdDev", i, thisALine[sdevIndex]);
+	Table.set("b*Mean", i, thisBLine[meanIndex]);
+	Table.set("b*StdDev", i, thisBLine[sdevIndex]);
+}//end looping over each file that has been processed
+
+function arrayIndexOf(array, value){
+	
+	for(i = 0; i < lengthOf(array); i++){
+		if(array[i] == value){
+			return i;
+		}
+	}
+	return -1;
+}
