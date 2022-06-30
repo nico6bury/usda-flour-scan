@@ -29,7 +29,8 @@
  * labResultsName : name of window with L*a*b* results
  * nFilesProcessed : number of files that have been processed
  * separateRows : whether or not to put blank lines between certain rows
- * columnSplit : due to lack of reflection, changing this will not do anything
+ * columnSplit : controls which column determines line splitting. 
+ * 				Currently the options are Rep, Slice, Rot, and Side
  */
 
 /// just a few useful variables for later
@@ -109,7 +110,7 @@ percentIndex = arrayIndexOf(summaryColumns, "%Area");
 meanIndex = arrayIndexOf(labColumns, "Mean");
 sdevIndex = arrayIndexOf(labColumns, "StdDev");
 
-lastSlice = " ";
+lastSplit = newArray(" "," "," "," ");
 // stands for index offset, used for adding blank rows
 io = 0;
 
@@ -123,8 +124,11 @@ for(i = 0; i < nFilesProcessed; i++){
 	nameWoExtn = substring(nameWoExtn, 0, indexOf(nameWoExtn, "."));
 	nameSplit = split(nameWoExtn, "-");
 	// add a blank line if we need one
-	if(lastSlice != " "){
-		if(lastSlice != nameSplit[1]){
+	if(lastSplit[0] != " "){
+		if(columnSplit == "Rep" && lastSplit[0] != nameSplit[0]
+		|| columnSplit == "Slice" && lastSplit[1] != nameSplit[1]
+		|| columnSplit == "Rot" && lastSplit[2] != nameSplit[2]
+		|| columnSplit == "Side" && lastSplit[3] != nameSplit[3]){
 			// add blank spot to each
 			headings = split(Table.headings, "\t");
 			for(j = 0; j < lengthOf(headings); j++){
@@ -132,10 +136,10 @@ for(i = 0; i < nFilesProcessed; i++){
 			}//end adding blank spot in each heading
 			io++;
 		}//end if we need to add a blank row
-		lastSlice = nameSplit[1];
-	}//end if we have something to compare
+		lastSplit = nameSplit;
+	}//end if we aren't eithe first row or after a split
 	else if(separateRows){
-		lastSlice = nameSplit[1];
+		lastSplit = nameSplit;
 	}//end if we need to set comparison for later
 	// add the names we figured out to the cool table we're building
 	Table.set("Rep", i+io, nameSplit[0]);
