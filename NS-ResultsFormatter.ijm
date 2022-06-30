@@ -28,12 +28,16 @@
  * mainSummaryName : name of window with particle results
  * labResultsName : name of window with L*a*b* results
  * nFilesProcessed : number of files that have been processed
+ * separateRows : whether or not to put blank lines between certain rows
+ * columnSplit : due to lack of reflection, changing this will not do anything
  */
 
 /// just a few useful variables for later
 mainSummaryName = "Summary";
 labResultsName = "L*a*b* Results";
 nFilesProcessed = 0;
+separateRows = true;
+columnSplit = "Slice";
 
 serializedArguments = getArgument();
 if(lengthOf(serializedArguments) == 0){
@@ -41,6 +45,7 @@ if(lengthOf(serializedArguments) == 0){
 	Dialog.addString("Main Summary Name", mainSummaryName, 15);
 	Dialog.addString("L*a*b* Results Name", labResultsName, 15);
 	Dialog.addNumber("Number of Files Processed", nFilesProcessed);
+	Dialog.addCheckbox("Separate Samples", separateRows);
 	Dialog.show();
 	mainSummaryName = Dialog.getString();
 	labResultsName = Dialog.getString();
@@ -62,6 +67,12 @@ else{
 		else if(thisLine[0] == "nFilesProcessed"){
 			nFilesProcessed = parseInt(thisLine[1]);
 		}//end if this line gives us the number of files that were processed
+		else if(thisLine[0] == "separateRows"){
+			separateRows = parseInt(thisLine[1]);
+		}//end if this line tells us whether we should separate certain rows
+		else if(thisLine[0] == "columnSplit"){
+			//columnSplit = thisLine[1];
+		}//end if this line tells us what column we should separate by
 	}//end looping over lines to be deserialized
 }//end else we need to parse the arguments we've been given
 
@@ -98,6 +109,10 @@ percentIndex = arrayIndexOf(summaryColumns, "%Area");
 meanIndex = arrayIndexOf(labColumns, "Mean");
 sdevIndex = arrayIndexOf(labColumns, "StdDev");
 
+lastSlice = " ";
+// stands for index offset, used for adding blank rows
+io = 0;
+
 for(i = 0; i < nFilesProcessed; i++){
 	// make sure we have the right window selected
 	selectWindow(finalResultsName);
@@ -107,15 +122,30 @@ for(i = 0; i < nFilesProcessed; i++){
 	nameWoExtn = thisSummaryLine[sliceIndex];
 	nameWoExtn = substring(nameWoExtn, 0, indexOf(nameWoExtn, "."));
 	nameSplit = split(nameWoExtn, "-");
+	// add a blank line if we need one
+	if(lastSlice != " "){
+		if(lastSlice != nameSplit[1]){
+			// add blank spot to each
+			headings = split(Table.headings, "\t");
+			for(j = 0; j < lengthOf(headings); j++){
+				Table.set(headings[j], i+io, " ");
+			}//end adding blank spot in each heading
+			io++;
+		}//end if we need to add a blank row
+		lastSlice = nameSplit[1];
+	}//end if we have something to compare
+	else if(separateRows){
+		lastSlice = nameSplit[1];
+	}//end if we need to set comparison for later
 	// add the names we figured out to the cool table we're building
-	Table.set("Rep", i, nameSplit[0]);
-	Table.set("Slice", i, nameSplit[1]);
-	Table.set("Rot", i, nameSplit[2]);
-	Table.set("Side", i, nameSplit[3]);
+	Table.set("Rep", i+io, nameSplit[0]);
+	Table.set("Slice", i+io, nameSplit[1]);
+	Table.set("Rot", i+io, nameSplit[2]);
+	Table.set("Side", i+io, nameSplit[3]);
 	// add non-processed columns to right place in the table
-	Table.set("Count", i, thisSummaryLine[countIndex]);
-	Table.set("Pixels", i, thisSummaryLine[pixelsIndex]);
-	Table.set("%Area", i, thisSummaryLine[percentIndex]);
+	Table.set("Count", i+io, thisSummaryLine[countIndex]);
+	Table.set("Pixels", i+io, thisSummaryLine[pixelsIndex]);
+	Table.set("%Area", i+io, thisSummaryLine[percentIndex]);
 	// get indices for lab columns
 	li = i * 3 + 1;
 	ai = i * 3 + 2;
@@ -125,12 +155,12 @@ for(i = 0; i < nFilesProcessed; i++){
 	thisALine = split(labResults[ai], "\t");
 	thisBLine = split(labResults[bi], "\t");
 	// add the stuff from lab columns where its supposed to go
-	Table.set("L*Mean", i, thisLLine[meanIndex]);
-	Table.set("L*dev", i, thisLLine[sdevIndex]);
-	Table.set("a*Mean", i, thisALine[meanIndex]);
-	Table.set("a*dev", i, thisALine[sdevIndex]);
-	Table.set("b*Mean", i, thisBLine[meanIndex]);
-	Table.set("b*dev", i, thisBLine[sdevIndex]);
+	Table.set("L*Mean", i+io, thisLLine[meanIndex]);
+	Table.set("L*dev", i+io, thisLLine[sdevIndex]);
+	Table.set("a*Mean", i+io, thisALine[meanIndex]);
+	Table.set("a*dev", i+io, thisALine[sdevIndex]);
+	Table.set("b*Mean", i+io, thisBLine[meanIndex]);
+	Table.set("b*dev", i+io, thisBLine[sdevIndex]);
 }//end looping over each file that has been processed
 
 function arrayIndexOf(array, value){
