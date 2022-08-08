@@ -115,14 +115,14 @@ for(i = 0; i < lengthOf(filesToProcess); i++){
 	xEnd1 = imgWidth / 2;
 	// make first selection to duplicate
 	makeRectangle(0, 0, xEnd1, imgHeight);
-	run("Duplicate...", "FirstDup");
+	run("Duplicate...", "title=FirstDup");
 	// capture id of first duplicate
 	firstDupID = getImageID();
 	// reselect original image
 	if(isOpen(originalID)){selectImage(originalID);}
 	// make second selection and duplicate
 	makeRectangle(xEnd1, 0, imgWidth, imgHeight);
-	run("Duplicate...", "SecondDup");
+	run("Duplicate...", "title=SecondDup");
 	// capture id of second duplicate
 	secondDupID = getImageID();
 	// close original image
